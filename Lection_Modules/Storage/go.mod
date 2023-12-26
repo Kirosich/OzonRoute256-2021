@@ -1,4 +1,4 @@
-module github.com/Kirosich/OzonRoute256-2021/LectionModules/Storage
+module github.com/Kirosich/OzonRoute256-2021/Lection_Modules/Storage
 
 go 1.18
 

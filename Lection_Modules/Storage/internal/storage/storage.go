@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Kirosich/OzonRoute256-2021/LectionModules/Storage/internal/file"
+	"github.com/Kirosich/OzonRoute256-2021/Lection_Modules/Storage/internal/file"
 	"github.com/google/uuid"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Kirosich/OzonRoute256-2021/LectionModules/Storage/internal/storage"
+	"github.com/Kirosich/OzonRoute256-2021/Lection_Modules/Storage/internal/storage"
 )
 
 func main() {
