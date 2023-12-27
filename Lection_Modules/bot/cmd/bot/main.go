@@ -38,16 +38,7 @@ func main() {
 		if update.Message == nil {
 			continue
 		}
-
-		switch update.Message.Command() {
-		case "help":
-			Commander.Help(update.Message)
-
-		case "list":
-			Commander.List(update.Message)
-		default:
-			Commander.Default(update.Message)
-		}
+		Commander.HandleUpdate(update)
 	}
 
 }
