@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"log"
+
 	"github.com/OzonRoute256-2021/Lection_Modules/Bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -18,6 +20,13 @@ func NewCommander(bot *tgbotapi.BotAPI, productService *product.Service) *Comman
 }
 
 func (c *Commander) HandleUpdate(update tgbotapi.Update) {
+
+	defer func() {
+		if panicValue := recover(); panicValue != nil {
+			log.Printf("recovered from panic: %v", panicValue)
+		}
+	}()
+
 	if update.Message == nil {
 		return
 	}
