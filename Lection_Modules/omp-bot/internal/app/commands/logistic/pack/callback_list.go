@@ -37,10 +37,6 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 	}
 	// Список сущностей
 	products := c.packService.List()
-
-	// Итоговое сообщение
-	listMsg := "Here all the products: \n\n"
-
 	// Максимум страниц с проверкой на остаток
 
 	var maxPages int
@@ -51,8 +47,13 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 		maxPages = len(products) / numberOfPositions
 	}
 
+	// Строчка все сущности
+	listMsg := "Here all the products: \n\n"
+
+	// Добавка строки с отображением страниц
 	listMsg += fmt.Sprintf("Page: %v/%v\n", page+1, maxPages)
 
+	// Отображение сущностей по страницам
 	FromElem := page * numberOfPositions
 	ToElem := FromElem + numberOfPositions
 
@@ -64,21 +65,25 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 		}
 	}
 
+	// Создание сообщения
 	msg := tgbotapi.NewMessage(
 		callback.Message.Chat.ID,
 		listMsg,
 	)
 
+	// Json для кнопки следующей страницы
 	serializedDataNext, _ := json.Marshal(CallbackListData{
 		Page:   page,
 		Vector: true,
 	})
 
+	// Json для кнопки предыдущей страницы
 	serializedDataPrev, _ := json.Marshal(CallbackListData{
 		Page:   page,
 		Vector: false,
 	})
 
+	// Соответствующие callback'и
 	callbackPathNext := path.CallbackPath{
 		Domain:       "logistic",
 		Subdomain:    "pack",
@@ -93,21 +98,30 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 		CallbackData: string(serializedDataPrev),
 	}
 
-	if page != 0 {
+	// Switch для отображение страниц
+	switch {
+	case page == 0: // если первая страница, то только кнопка вперед
+		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
+			),
+		)
+	case page == maxPages-1: // если страница равна максимальному количеству страниц, то кнопка только назад
+		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
+			),
+		)
+	case page != 0: // остальное можно и вперед и назад
 		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(
 				tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
 				tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
 			),
 		)
-	} else {
-		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
-			),
-		)
 	}
 
+	// Отправка сообщений
 	_, err = c.bot.Send(msg)
 	if err != nil {
 		log.Printf("LogisticPackCommander.CallbackList: error sending reply message to chat - %v", err)
