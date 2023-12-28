@@ -1,2 +1,4 @@
-github.com/Kirosich/OzonRoute256-2021 v0.0.0-20231226013506-8e23ad859144 h1:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
-github.com/Kirosich/OzonRoute256-2021 v0.0.0-20231226013506-8e23ad859144/go.mod h1:MBJDE2lmRYTVh681VNnfNn+xx2Wg9exW2LmQTGGVmCw=
+github.com/Kirosich/OzonRoute256-2021/Lection_Modules/Storage v0.0.0-20231226193946-cbad17b2b5db h1:983DjFooR4A3pmWucHNPyJtqJmR5chb6cintotVWjmU=
+github.com/Kirosich/OzonRoute256-2021/Lection_Modules/Storage v0.0.0-20231226193946-cbad17b2b5db/go.mod h1:c9j1df9+fAl3U/Aael3Fyb9iW1R+7W/OpBY6BSdQlbE=
+github.com/google/uuid v1.5.0 h1:1p67kYwdtXjb0gL0BPiP1Av9wiZPo5A8z2cWkTZ+eyU=
+github.com/google/uuid v1.5.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
