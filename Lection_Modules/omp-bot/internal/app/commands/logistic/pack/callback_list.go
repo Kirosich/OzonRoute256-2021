@@ -41,15 +41,24 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 	// Итоговое сообщение
 	listMsg := "Here all the products: \n\n"
 
-	maxPages := len(products) / 5 // Максимум страниц
+	// Максимум страниц с проверкой на остаток
+
+	var maxPages int
+
+	if len(products)%numberOfPositions > 0 {
+		maxPages = len(products)/numberOfPositions + 1
+	} else {
+		maxPages = len(products) / numberOfPositions
+	}
+
 	listMsg += fmt.Sprintf("Page: %v/%v\n", page+1, maxPages)
 
-	FromElem := page * 5
-	ToElem := FromElem + 5
+	FromElem := page * numberOfPositions
+	ToElem := FromElem + numberOfPositions
 
-	for i := FromElem - 1; i < ToElem-1; i++ {
-		if i <= len(products) {
-			listMsg += fmt.Sprintf("%v", products[i+1].Title+"\n")
+	for i := FromElem; i < ToElem; i++ {
+		if i <= len(products)-1 { // -1 так как в len идёт конкретная длина
+			listMsg += fmt.Sprintf("%v", products[i].Title+"\n")
 		} else {
 			break
 		}

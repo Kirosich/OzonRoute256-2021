@@ -16,6 +16,8 @@ var allEntities = []Subdomain{
 	{Title: "thirteen"},
 	{Title: "fourteen"},
 	{Title: "fifteen"},
+	{Title: "sixteen"},
+	{Title: "seventeen"},
 }
 
 type Subdomain struct {

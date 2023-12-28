@@ -9,15 +9,28 @@ import (
 	"github.com/ozonmp/omp-bot/internal/app/path"
 )
 
+const numberOfPositions = 5
+
 func (c *LogisticPackCommander) List(inputMessage *tgbotapi.Message) {
 	outputMsgText := "Here all the products: \n\n"
 
 	products := c.packService.List()
 
-	maxPages := len(products) / 5
+	// Максимум страниц с проверкой на остаток
+
+	var maxPages int
+
+	if len(products)%numberOfPositions > 0 {
+		maxPages = len(products)/numberOfPositions + 1
+	} else {
+		maxPages = len(products) / numberOfPositions
+	}
+
+	// Добавление в сообщение указание страниц
 	outputMsgText += fmt.Sprintf("Page: 1/%v \n", maxPages)
 
-	for i := 0; i < 5; i++ {
+	// Добавление в сообщение списка продуктов
+	for i := 0; i < numberOfPositions; i++ {
 		outputMsgText += products[i].Title
 		outputMsgText += "\n"
 	}
