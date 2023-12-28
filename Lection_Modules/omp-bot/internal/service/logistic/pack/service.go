@@ -1,5 +1,7 @@
 package pack
 
+import "errors"
+
 type Service struct{}
 
 func NewService() *Service {
@@ -11,5 +13,8 @@ func (s *Service) List() []Subdomain {
 }
 
 func (s *Service) Get(idx int) (*Subdomain, error) {
-	return &allEntities[idx], nil
+	if idx <= len(allEntities) && !(idx < 0) {
+		return &allEntities[idx], nil
+	}
+	return nil, errors.New("index is wrong")
 }

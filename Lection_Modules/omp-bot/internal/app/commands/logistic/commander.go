@@ -34,10 +34,10 @@ func NewLogisticCommander(
 // Реализация Интерфейса
 func (c *LogisticCommander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
 	switch callbackPath.Subdomain {
-	case "package":
+	case "pack":
 		c.packCommander.HandleCallback(callback, callbackPath)
 	default:
-		log.Printf("DemoCommander.HandleCallback: unknown subdomain - %s", callbackPath.Subdomain)
+		log.Printf("LogisticCommander.HandleCallback: unknown subdomain - %s", callbackPath.Subdomain)
 	}
 }
 
@@ -46,6 +46,8 @@ func (c *LogisticCommander) HandleCommand(msg *tgbotapi.Message, commandPath pat
 	case "pack":
 		c.packCommander.HandleCommand(msg, commandPath)
 	default:
-		log.Printf("DemoCommander.HandleCommand: unknown subdomain - %s", commandPath.Subdomain)
+		log.Printf("LogisticCommander.HandleCommand: unknown subdomain - %s", commandPath.Subdomain)
+		commandPath.CommandName = "default"
+		c.packCommander.HandleCommand(msg, commandPath)
 	}
 }

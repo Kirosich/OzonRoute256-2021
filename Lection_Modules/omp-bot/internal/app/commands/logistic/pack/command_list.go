@@ -2,6 +2,7 @@ package pack
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -12,15 +13,20 @@ func (c *LogisticPackCommander) List(inputMessage *tgbotapi.Message) {
 	outputMsgText := "Here all the products: \n\n"
 
 	products := c.packService.List()
-	for _, p := range products {
-		outputMsgText += p.Title
+
+	maxPages := len(products) / 5
+	outputMsgText += fmt.Sprintf("Page: 1/%v \n", maxPages)
+
+	for i := 0; i < 5; i++ {
+		outputMsgText += products[i].Title
 		outputMsgText += "\n"
 	}
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, outputMsgText)
 
 	serializedData, _ := json.Marshal(CallbackListData{
-		Offset: 21,
+		Page:   0,
+		Vector: true,
 	})
 
 	callbackPath := path.CallbackPath{

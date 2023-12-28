@@ -59,7 +59,6 @@ func (c *Router) handleCallback(callback *tgbotapi.CallbackQuery) {
 	switch callbackPath.Domain {
 	case "logistic":
 		c.logisticCommander.HandleCallback(callback, callbackPath)
-		break
 	default:
 		log.Printf("Router.handleCallback: unknown domain - %s", callbackPath.Domain)
 	}
@@ -74,7 +73,8 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 
 	commandPath, err := path.ParseCommand(msg.Command())
 	if err != nil {
-		log.Printf("Router.handleCallback: error parsing callback data `%s` - %v", msg.Command(), err)
+		c.showCommandFormat(msg)
+		log.Printf("Router.handleMessage: error parsing callback data `%s` - %v", msg.Command(), err)
 		return
 	}
 
@@ -82,15 +82,14 @@ func (c *Router) handleMessage(msg *tgbotapi.Message) {
 
 	case "logistic":
 		c.logisticCommander.HandleCommand(msg, commandPath)
-		break
 
 	default:
-		log.Printf("Router.handleCallback: unknown domain - %s", commandPath.Domain)
+		log.Printf("Router.handleMessage: unknown domain - %s", commandPath.Domain)
 	}
 }
 
 func (c *Router) showCommandFormat(inputMessage *tgbotapi.Message) {
-	outputMsg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Command format: /{command}__{domain}__{subdomain}")
+	outputMsg := tgbotapi.NewMessage(inputMessage.Chat.ID, "Sorry, I don't know understand You.\nTry to /help__logistic__pack - to get list of my commands") // Command format: /{command}__{domain}__{subdomain}
 
 	_, err := c.bot.Send(outputMsg)
 	if err != nil {

@@ -12,12 +12,24 @@ func (c *LogisticPackCommander) Get(inputMessage *tgbotapi.Message) {
 
 	idx, err := strconv.Atoi(args)
 	if err != nil {
+		msg := tgbotapi.NewMessage(
+			inputMessage.Chat.ID,
+			"Вы не ввели номер сущности. \n"+
+				"Правильный пример команды: /get__logistic__pack 3",
+		)
+		c.bot.Send(msg)
 		log.Println("wrong args", args)
 		return
 	}
 
-	product, err := c.packService.Get(idx)
+	product, err := c.packService.Get(idx - 1)
 	if err != nil {
+		msg := tgbotapi.NewMessage(
+			inputMessage.Chat.ID,
+			"Вы ввели несуществующий номер сущности. \n"+
+				"Попробуйте ввести другой.",
+		)
+		c.bot.Send(msg)
 		log.Printf("fail to get product with idx %d: %v", idx, err)
 		return
 	}

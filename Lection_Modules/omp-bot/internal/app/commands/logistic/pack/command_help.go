@@ -8,9 +8,9 @@ import (
 
 func (c *LogisticPackCommander) Help(inputMessage *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID,
-		"/help__logistic_pack - print list of commands\n"+
-			"/get__logistic_pack - get an entity \n"+
-			"/list__logistic_pack - get a list of your entity \n"+
+		"/help__logistic__pack - print list of commands\n"+
+			"/get__logistic__pack {entity_id}- get an entity \n"+
+			"/list__logistic__pack - get a list of your entity \n"+
 			"/delete__logistic__pack - delete an existing entity \n"+
 			"/new__logistic__pack - create a new entity \n"+
 			"/edit__logistic__pack - edit an entity",
