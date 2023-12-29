@@ -18,7 +18,7 @@ func (c *LogisticPackCommander) Get(inputMessage *tgbotapi.Message) {
 				"Правильный пример команды: /get__logistic__pack 3",
 		)
 		c.bot.Send(msg)
-		log.Println("wrong args", args)
+		log.Println("LogisticPackCommander.Get: wrong args", args)
 		return
 	}
 
@@ -30,7 +30,7 @@ func (c *LogisticPackCommander) Get(inputMessage *tgbotapi.Message) {
 				"Попробуйте ввести другой.",
 		)
 		c.bot.Send(msg)
-		log.Printf("fail to get product with idx %d: %v", idx, err)
+		log.Printf("LogisticPackCommander.Get: fail to get product with idx %d: %v", idx, err)
 		return
 	}
 
