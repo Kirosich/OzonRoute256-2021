@@ -1,4 +1,4 @@
-module github.com/ozonmp/omp-bot
+module github.com/OzonRoute256-2021/Lection_Modules/omp-bot
 
 go 1.17
 

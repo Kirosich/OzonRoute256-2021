@@ -22,7 +22,7 @@ func (c *LogisticPackCommander) Get(inputMessage *tgbotapi.Message) {
 		return
 	}
 
-	product, err := c.packService.Get(idx - 1)
+	product, err := c.packService.Describe(idx - 1)
 	if err != nil {
 		msg := tgbotapi.NewMessage(
 			inputMessage.Chat.ID,

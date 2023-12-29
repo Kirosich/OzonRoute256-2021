@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 )
 
 type CallbackListData struct {
-	Page   int  `json:"page"`
-	Vector bool `json:"vector"`
+	CursorI int  `json:"cursori"`
+	Vector  bool `json:"vector"`
 }
 
 func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
@@ -24,46 +24,66 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 		return
 	}
 
-	// На какой странице находимся
-	page := parsedData.Page
-
-	// Направление вверх = true | вниз = false
+	// Где находится курсор
+	cursor := parsedData.CursorI
 	vector := parsedData.Vector
-
-	if vector {
-		page += 1
-	} else {
-		page -= 1
-	}
-	// Список сущностей
-	products := c.packService.List()
-	// Максимум страниц с проверкой на остаток
-
-	var maxPages int
-
-	if len(products)%numberOfPositions > 0 {
-		maxPages = len(products)/numberOfPositions + 1
-	} else {
-		maxPages = len(products) / numberOfPositions
-	}
 
 	// Строчка все сущности
 	listMsg := "Here all the products: \n\n"
 
-	// Добавка строки с отображением страниц
-	listMsg += fmt.Sprintf("Page: %v/%v\n", page+1, maxPages)
+	// Список сущностей
+	if vector {
+		cursor += int(limit)
+
+		products := c.packService.List(uint64(cursor), limit)
+		for _, val := range products {
+			listMsg += val.Title
+			listMsg += "\n"
+		}
+		fmt.Printf("Vector: %v, Cursor: %v \n", vector, cursor)
+	} else {
+		cursorI := cursor
+		fmt.Println(cursor, cursor-int(limit))
+		for i := cursor; i > cursorI-int(limit); i-- {
+			fmt.Println(i)
+			if i > 0 {
+				cursor--
+			} else {
+				break
+			}
+		}
+		products := c.packService.List(uint64(cursor), limit)
+		for _, val := range products {
+			listMsg += val.Title
+			listMsg += "\n"
+		}
+		fmt.Printf("Vector: %v, Cursor: %v \n", vector, cursor)
+	}
+
+	// // Максимум страниц с проверкой на остаток
+
+	// var maxPages int
+
+	// if len(products)%numberOfPositions > 0 {
+	// 	maxPages = len(products)/numberOfPositions + 1
+	// } else {
+	// 	maxPages = len(products) / numberOfPositions
+	// }
+
+	// // Добавка строки с отображением страниц
+	// listMsg += fmt.Sprintf("Page: %v/%v\n", page+1, maxPages)
 
 	// Отображение сущностей по страницам
-	FromElem := page * numberOfPositions
-	ToElem := FromElem + numberOfPositions
+	// FromElem := page * numberOfPositions
+	// ToElem := FromElem + numberOfPositions
 
-	for i := FromElem; i < ToElem; i++ {
-		if i <= len(products)-1 { // -1 так как в len идёт конкретная длина
-			listMsg += fmt.Sprintf("%v", products[i].Title+"\n")
-		} else {
-			break
-		}
-	}
+	// for i := FromElem; i < ToElem; i++ {
+	// 	if i <= len(products)-1 { // -1 так как в len идёт конкретная длина
+	// 		listMsg += fmt.Sprintf("%v", products[i].Title+"\n")
+	// 	} else {
+	// 		break
+	// 	}
+	// }
 
 	// Создание сообщения
 	msg := tgbotapi.NewMessage(
@@ -71,16 +91,14 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 		listMsg,
 	)
 
-	// Json для кнопки следующей страницы
 	serializedDataNext, _ := json.Marshal(CallbackListData{
-		Page:   page,
-		Vector: true,
+		CursorI: cursor,
+		Vector:  true,
 	})
 
-	// Json для кнопки предыдущей страницы
 	serializedDataPrev, _ := json.Marshal(CallbackListData{
-		Page:   page,
-		Vector: false,
+		CursorI: cursor,
+		Vector:  false,
 	})
 
 	// Соответствующие callback'и
@@ -98,28 +116,35 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 		CallbackData: string(serializedDataPrev),
 	}
 
+	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
+			tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
+		),
+	)
+
 	// Switch для отображение страниц
-	switch {
-	case page == 0: // если первая страница, то только кнопка вперед
-		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
-			),
-		)
-	case page == maxPages-1: // если страница равна максимальному количеству страниц, то кнопка только назад
-		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
-			),
-		)
-	case page != 0: // остальное можно и вперед и назад
-		msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
-				tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
-			),
-		)
-	}
+	// switch {
+	// case page == 0: // если первая страница, то только кнопка вперед
+	// 	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+	// 		tgbotapi.NewInlineKeyboardRow(
+	// 			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
+	// 		),
+	// 	)
+	// case page == maxPages-1: // если страница равна максимальному количеству страниц, то кнопка только назад
+	// 	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+	// 		tgbotapi.NewInlineKeyboardRow(
+	// 			tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
+	// 		),
+	// 	)
+	// case page != 0: // остальное можно и вперед и назад
+	// 	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
+	// 		tgbotapi.NewInlineKeyboardRow(
+	// 			tgbotapi.NewInlineKeyboardButtonData("Next page", callbackPathNext.String()),
+	// 			tgbotapi.NewInlineKeyboardButtonData("Previous page", callbackPathPrev.String()),
+	// 		),
+	// 	)
+	// }
 
 	// Отправка сообщений
 	_, err = c.bot.Send(msg)

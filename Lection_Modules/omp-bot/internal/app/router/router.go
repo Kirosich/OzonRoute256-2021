@@ -4,9 +4,9 @@ import (
 	"log"
 	"runtime/debug"
 
+	"github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/app/commands/logistic"
+	"github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/commands/logistic"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 )
 
 type Commander interface {

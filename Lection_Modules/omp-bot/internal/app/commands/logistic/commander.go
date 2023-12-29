@@ -3,9 +3,9 @@ package logistic
 import (
 	"log"
 
+	"github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/app/commands/logistic/pack"
+	"github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/commands/logistic/pack"
-	"github.com/ozonmp/omp-bot/internal/app/path"
 )
 
 // Интерфейс Коммандера

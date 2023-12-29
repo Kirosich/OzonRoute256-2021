@@ -3,14 +3,14 @@ package pack
 import (
 	"log"
 
+	"github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/app/path"
+	pack "github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/service/logistic/pack"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/ozonmp/omp-bot/internal/app/path"
-	"github.com/ozonmp/omp-bot/internal/service/logistic/pack"
 )
 
 type LogisticPackCommander struct {
 	bot         *tgbotapi.BotAPI
-	packService *pack.Service
+	packService *pack.DummyPackService
 }
 
 func NewLogisticPackCommander(
