@@ -42,7 +42,7 @@ func NewDummyPackService() *DummyPackService {
 
 func (s *DummyPackService) Describe(packID uint64) (*logistic.Pack, error) {
 
-	if int(packID) <= len(allEntities) && !(int(packID) < 0) {
+	if int(packID) < len(allEntities) && !(int(packID) < 0) {
 		getElem := allEntities[packID]
 		return &getElem, nil
 	}
