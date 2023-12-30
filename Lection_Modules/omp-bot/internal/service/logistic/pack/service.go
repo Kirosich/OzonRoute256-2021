@@ -29,7 +29,7 @@ var allEntities = []logistic.Pack{
 type PackService interface {
 	Describe(packID uint64) (*logistic.Pack, error)
 	List(cursor uint64, limit uint64) ([]logistic.Pack, error)
-	Create(logistic.Pack) (uint64, error)
+	Create(pack logistic.Pack) (uint64, error)
 	Update(packID uint64, pack logistic.Pack) error
 	Remove(packID uint64) (bool, error)
 }
@@ -64,8 +64,13 @@ func (s *DummyPackService) Describe(idx int) (*logistic.Pack, error) {
 	return nil, errors.New("index is wrong")
 }
 
+func (s *DummyPackService) Create(pack logistic.Pack) (uint64, error) {
+	allEntities = append(allEntities, pack)
+	return uint64(len(allEntities)), nil
+}
+
 func (s *DummyPackService) Remove(packID uint64) (bool, error) {
-	if packID >= 0 && int(packID) < len(allEntities) {
+	if int(packID) < len(allEntities) {
 		var newAllEntities []logistic.Pack
 		newAllEntities = append(newAllEntities, allEntities[0:int(packID)]...)
 		newAllEntities = append(newAllEntities, allEntities[int(packID)+1:]...)
@@ -74,5 +79,14 @@ func (s *DummyPackService) Remove(packID uint64) (bool, error) {
 		return true, nil
 	}
 
-	return false, errors.New("Wrong pack ID")
+	return false, errors.New("wrong pack ID")
+}
+
+func (s *DummyPackService) Update(packID uint64, pack logistic.Pack) (bool, error) {
+	if packID < uint64(len(allEntities)) {
+		allEntities[packID] = pack
+		return true, nil
+	}
+
+	return false, errors.New("packid more than len of list")
 }

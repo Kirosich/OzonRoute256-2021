@@ -43,6 +43,10 @@ func (c *LogisticPackCommander) HandleCommand(msg *tgbotapi.Message, commandPath
 		c.Get(msg)
 	case "delete":
 		c.Delete(msg)
+	case "new":
+		c.New(msg)
+	case "edit":
+		c.Edit(msg)
 	default:
 		c.Default(msg)
 	}

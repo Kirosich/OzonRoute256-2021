@@ -13,7 +13,7 @@ func (c *LogisticPackCommander) Help(inputMessage *tgbotapi.Message) {
 			"/list__logistic__pack - get a list of your entity \n"+
 			"/delete__logistic__pack - delete an existing entity \n"+
 			"/new__logistic__pack - create a new entity \n"+
-			"/edit__logistic__pack - edit an entity",
+			"/edit__logistic__pack {entity_id} {NewTitle} - edit an entity",
 	)
 
 	_, err := c.bot.Send(msg)
