@@ -17,12 +17,12 @@ func (c *LogisticPackCommander) New(inputMessage *tgbotapi.Message) {
 	if args == "" {
 		msg := tgbotapi.NewMessage(
 			inputMessage.Chat.ID,
-			"Вы не ввели название сущности. \n"+
-				"Правильный пример команды: /new__logistic__pack kek",
+			"Sorry, you didn't entered name of new entity. \n"+
+				"Correct form of command: /new__logistic__pack kek",
 		)
 
 		c.bot.Send(msg)
-		log.Println("LogisticPackCommander.Get: wrong args", args)
+		log.Println("LogisticPackCommander.New: wrong args", args)
 		return
 	}
 
@@ -39,9 +39,12 @@ func (c *LogisticPackCommander) New(inputMessage *tgbotapi.Message) {
 
 	msg := tgbotapi.NewMessage(
 		inputMessage.Chat.ID,
-		fmt.Sprintf("Сущность %v добавлена. \n", newPack.Title),
+		fmt.Sprintf("Entity %v is added. \n", newPack.Title),
 	)
 
-	c.bot.Send(msg)
+	_, err = c.bot.Send(msg)
+	if err != nil {
+		log.Printf("LogisticPackCommander.New: error sending reply message to chat - %v", err)
+	}
 
 }

@@ -13,6 +13,6 @@ func (c *LogisticPackCommander) Default(inputMessage *tgbotapi.Message) {
 
 	_, err := c.bot.Send(msg)
 	if err != nil {
-		log.Printf("LogisticPackCommander.Help: error sending reply message to chat - %v", err)
+		log.Printf("LogisticPackCommander.Default: error sending reply message to chat - %v", err)
 	}
 }

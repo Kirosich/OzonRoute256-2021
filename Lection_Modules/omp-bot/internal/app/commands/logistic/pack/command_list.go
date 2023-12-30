@@ -15,7 +15,16 @@ func (c *LogisticPackCommander) List(inputMessage *tgbotapi.Message) {
 
 	cursorI := 0
 
-	products := c.packService.List(uint64(cursorI), limit)
+	products, err := c.packService.List(uint64(cursorI), limit)
+	if err != nil {
+		msg := tgbotapi.NewMessage(
+			inputMessage.Chat.ID,
+			"Something went wrong, sorry. \n",
+		)
+		c.bot.Send(msg)
+		log.Println("LogisticPackCommander.List: Error while getting list")
+		return
+	}
 
 	// Максимум страниц с проверкой на остаток
 
@@ -56,7 +65,7 @@ func (c *LogisticPackCommander) List(inputMessage *tgbotapi.Message) {
 		),
 	)
 
-	_, err := c.bot.Send(msg)
+	_, err = c.bot.Send(msg)
 	if err != nil {
 		log.Printf("LogisticPackCommander.List: error sending reply message to chat - %v", err)
 	}

@@ -30,7 +30,10 @@ func (c LogisticPackCommander) Delete(inputMessage *tgbotapi.Message) {
 			"You typed incorreect number. \n"+
 				"Try another.",
 		)
-		c.bot.Send(msg)
+		_, err = c.bot.Send(msg)
+		if err != nil {
+			log.Printf("LogisticPackCommander.Delete: error sending reply message to chat - %v", err)
+		}
 		log.Println("LogisticPackCommander.Delete: delete was failed", args)
 		return
 	}

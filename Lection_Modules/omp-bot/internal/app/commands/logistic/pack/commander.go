@@ -8,15 +8,30 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+type PackCommander interface {
+	Help(inputMsg *tgbotapi.Message)
+	Get(inputMsg *tgbotapi.Message)
+	List(inputMsg *tgbotapi.Message)
+	Delete(inputMsg *tgbotapi.Message)
+	New(inputMsg *tgbotapi.Message)
+	Edit(inputMsg *tgbotapi.Message)
+	HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath)
+	HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath)
+}
+
+func NewPackCommander(bot *tgbotapi.BotAPI) PackCommander {
+	return NewLogisticPackCommander(bot)
+}
+
 type LogisticPackCommander struct {
 	bot         *tgbotapi.BotAPI
-	packService *pack.DummyPackService
+	packService pack.PackService
 }
 
 func NewLogisticPackCommander(
 	bot *tgbotapi.BotAPI,
 ) *LogisticPackCommander {
-	packService := pack.NewService()
+	packService := pack.NewDummyPackService()
 
 	return &LogisticPackCommander{
 		bot:         bot,

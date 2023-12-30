@@ -36,11 +36,20 @@ type PackService interface {
 
 type DummyPackService struct{}
 
-func NewService() *DummyPackService {
+func NewDummyPackService() *DummyPackService {
 	return &DummyPackService{}
 }
 
-func (s *DummyPackService) List(cursor uint64, limit uint64) []logistic.Pack {
+func (s *DummyPackService) Describe(packID uint64) (*logistic.Pack, error) {
+
+	if int(packID) <= len(allEntities) && !(int(packID) < 0) {
+		getElem := allEntities[packID]
+		return &getElem, nil
+	}
+	return nil, errors.New("index is wrong")
+}
+
+func (s *DummyPackService) List(cursor uint64, limit uint64) ([]logistic.Pack, error) {
 
 	var allEntitiesSlice []logistic.Pack
 	rlen := int(cursor + limit) // Последний элемент, который будет брать функция
@@ -53,20 +62,21 @@ func (s *DummyPackService) List(cursor uint64, limit uint64) []logistic.Pack {
 		allEntitiesSlice = append(allEntitiesSlice, allEntities[i])
 
 	}
-	return allEntitiesSlice
-}
-
-func (s *DummyPackService) Describe(idx int) (*logistic.Pack, error) {
-	if idx <= len(allEntities) && !(idx < 0) {
-		getElem := allEntities[idx]
-		return &getElem, nil
-	}
-	return nil, errors.New("index is wrong")
+	return allEntitiesSlice, nil
 }
 
 func (s *DummyPackService) Create(pack logistic.Pack) (uint64, error) {
 	allEntities = append(allEntities, pack)
 	return uint64(len(allEntities)), nil
+}
+
+func (s *DummyPackService) Update(packID uint64, pack logistic.Pack) error {
+	if packID < uint64(len(allEntities)) {
+		allEntities[packID] = pack
+		return nil
+	}
+
+	return errors.New("packid more than len of list")
 }
 
 func (s *DummyPackService) Remove(packID uint64) (bool, error) {
@@ -80,13 +90,4 @@ func (s *DummyPackService) Remove(packID uint64) (bool, error) {
 	}
 
 	return false, errors.New("wrong pack ID")
-}
-
-func (s *DummyPackService) Update(packID uint64, pack logistic.Pack) (bool, error) {
-	if packID < uint64(len(allEntities)) {
-		allEntities[packID] = pack
-		return true, nil
-	}
-
-	return false, errors.New("packid more than len of list")
 }

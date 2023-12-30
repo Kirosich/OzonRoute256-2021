@@ -35,7 +35,16 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 	if vector {
 		cursor += int(limit)
 
-		products := c.packService.List(uint64(cursor), limit)
+		products, err := c.packService.List(uint64(cursor), limit)
+		if err != nil {
+			msg := tgbotapi.NewMessage(
+				callback.Message.Chat.ID,
+				"Something went wrong, sorry. \n",
+			)
+			c.bot.Send(msg)
+			log.Println("LogisticPackCommander.CallbackList: Error while getting list")
+			return
+		}
 		for _, val := range products {
 			listMsg += val.Title
 			listMsg += "\n"
@@ -53,7 +62,16 @@ func (c *LogisticPackCommander) CallbackList(callback *tgbotapi.CallbackQuery, c
 				break
 			}
 		}
-		products := c.packService.List(uint64(cursor), limit)
+		products, err := c.packService.List(uint64(cursor), limit)
+		if err != nil {
+			msg := tgbotapi.NewMessage(
+				callback.Message.Chat.ID,
+				"Something went wrong, sorry. \n",
+			)
+			c.bot.Send(msg)
+			log.Println("LogisticPackCommander.CallbackList: Error while getting list")
+			return
+		}
 		for _, val := range products {
 			listMsg += val.Title
 			listMsg += "\n"

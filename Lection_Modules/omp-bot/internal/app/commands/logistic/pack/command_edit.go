@@ -20,7 +20,10 @@ func (c *LogisticPackCommander) Edit(inputMessage *tgbotapi.Message) {
 			"Try again. Correct format of command: /edit 3 NewPack")
 
 		log.Println("LogisticPackCommander.Edit: empty or not enough args")
-		c.bot.Send(msg)
+		_, err := c.bot.Send(msg)
+		if err != nil {
+			log.Printf("LogisticPackCommander.Edit: error sending reply message to chat - %v", err)
+		}
 		return
 	}
 
@@ -31,14 +34,22 @@ func (c *LogisticPackCommander) Edit(inputMessage *tgbotapi.Message) {
 	packID, _ := strconv.Atoi(argsSlice[0])
 	packID -= 1
 
-	_, err := c.packService.Update(uint64(packID), newPack)
+	err := c.packService.Update(uint64(packID), newPack)
 
 	if err != nil {
-		log.Printf("LogisticPackCommander.Edit: %v", err)
+		msg := tgbotapi.NewMessage(
+			inputMessage.Chat.ID,
+			"Something went wrong, sorry. \n",
+		)
+		c.bot.Send(msg)
+		log.Println("LogisticPackCommander.Edit: Error while editing list")
 		return
 	}
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, fmt.Sprintf("Edit of entity %v succesfully completed", packID+1))
 
-	c.bot.Send(msg)
+	_, err = c.bot.Send(msg)
+	if err != nil {
+		log.Printf("LogisticPackCommander.Edit: error sending reply message to chat - %v", err)
+	}
 }

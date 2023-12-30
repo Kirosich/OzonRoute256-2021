@@ -27,7 +27,7 @@ func NewLogisticCommander(
 	return &LogisticCommander{
 		bot: bot,
 		// packageCommander
-		packCommander: pack.NewLogisticPackCommander(bot),
+		packCommander: pack.NewPackCommander(bot),
 	}
 }
 

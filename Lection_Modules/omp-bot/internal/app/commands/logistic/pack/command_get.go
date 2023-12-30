@@ -14,22 +14,28 @@ func (c *LogisticPackCommander) Get(inputMessage *tgbotapi.Message) {
 	if err != nil {
 		msg := tgbotapi.NewMessage(
 			inputMessage.Chat.ID,
-			"Вы не ввели номер сущности. \n"+
-				"Правильный пример команды: /get__logistic__pack 3",
+			"Sorry, you entered wrong number of entity. \n"+
+				"Correct form of command: /get__logistic__pack 3",
 		)
-		c.bot.Send(msg)
+		_, err = c.bot.Send(msg)
+		if err != nil {
+			log.Printf("LogisticPackCommander.Get: error sending reply message to chat - %v", err)
+		}
 		log.Println("LogisticPackCommander.Get: wrong args", args)
 		return
 	}
 
-	product, err := c.packService.Describe(idx - 1)
+	product, err := c.packService.Describe(uint64(idx - 1))
 	if err != nil {
 		msg := tgbotapi.NewMessage(
 			inputMessage.Chat.ID,
-			"Вы ввели несуществующий номер сущности. \n"+
-				"Попробуйте ввести другой.",
+			"Sorry, You entered wrong number of entity. \n"+
+				"Try to enter another one.",
 		)
-		c.bot.Send(msg)
+		_, err = c.bot.Send(msg)
+		if err != nil {
+			log.Printf("LogisticPackCommander.Get: error sending reply message to chat - %v", err)
+		}
 		log.Printf("LogisticPackCommander.Get: fail to get product with idx %d: %v", idx, err)
 		return
 	}
