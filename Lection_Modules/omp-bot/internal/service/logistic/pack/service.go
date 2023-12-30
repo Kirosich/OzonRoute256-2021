@@ -6,24 +6,25 @@ import (
 	logistic "github.com/OzonRoute256-2021/Lection_Modules/omp-bot/internal/model/logistic"
 )
 
-var allEntitiesMap = map[int]logistic.Pack{
-	0:  {Title: "one"},
-	1:  {Title: "two"},
-	2:  {Title: "three"},
-	3:  {Title: "four"},
-	4:  {Title: "five"},
-	5:  {Title: "six"},
-	6:  {Title: "seven"},
-	7:  {Title: "eight"},
-	8:  {Title: "nine"},
-	9:  {Title: "ten"},
-	10: {Title: "eleven"},
-	11: {Title: "twelve"},
-	12: {Title: "thirteen"},
-	13: {Title: "fourteen"},
-	14: {Title: "fifteen"},
-	15: {Title: "sixteen"},
-	16: {Title: "seventeen"}}
+var allEntities = []logistic.Pack{
+	{Title: "one"},
+	{Title: "two"},
+	{Title: "three"},
+	{Title: "four"},
+	{Title: "five"},
+	{Title: "six"},
+	{Title: "seven"},
+	{Title: "eight"},
+	{Title: "nine"},
+	{Title: "ten"},
+	{Title: "eleven"},
+	{Title: "twelve"},
+	{Title: "thirteen"},
+	{Title: "fourteen"},
+	{Title: "fifteen"},
+	{Title: "sixteen"},
+	{Title: "seventeen"},
+}
 
 type PackService interface {
 	Describe(packID uint64) (*logistic.Pack, error)
@@ -45,19 +46,33 @@ func (s *DummyPackService) List(cursor uint64, limit uint64) []logistic.Pack {
 	rlen := int(cursor + limit) // Последний элемент, который будет брать функция
 
 	for i := int(cursor); i < rlen; i++ {
-		if int(cursor) > len(allEntitiesMap) {
+		if i > len(allEntities)-1 {
 			break
 		}
-		allEntitiesSlice = append(allEntitiesSlice, allEntitiesMap[i])
-	}
 
+		allEntitiesSlice = append(allEntitiesSlice, allEntities[i])
+
+	}
 	return allEntitiesSlice
 }
 
 func (s *DummyPackService) Describe(idx int) (*logistic.Pack, error) {
-	if idx <= len(allEntitiesMap) && !(idx < 0) {
-		getElem := allEntitiesMap[idx]
+	if idx <= len(allEntities) && !(idx < 0) {
+		getElem := allEntities[idx]
 		return &getElem, nil
 	}
 	return nil, errors.New("index is wrong")
+}
+
+func (s *DummyPackService) Remove(packID uint64) (bool, error) {
+	if packID >= 0 && int(packID) < len(allEntities) {
+		var newAllEntities []logistic.Pack
+		newAllEntities = append(newAllEntities, allEntities[0:int(packID)]...)
+		newAllEntities = append(newAllEntities, allEntities[int(packID)+1:]...)
+		allEntities = newAllEntities
+
+		return true, nil
+	}
+
+	return false, errors.New("Wrong pack ID")
 }
